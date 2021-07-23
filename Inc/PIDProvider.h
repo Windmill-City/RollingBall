@@ -1,5 +1,8 @@
 #include "Math.h"
 
+#define LOG_TAG "PIDProvider"
+#include "elog.h"
+
 /**
  * @brief PID 参数
  */
@@ -35,6 +38,7 @@ float pid_push_new_err(pPIDProvider provider, float new_err)
 
     provider->diff = new_err - provider->err;
     provider->err = new_err;
+    log_d("Err:%f, Integral:%f, Diff:%f", provider->err, provider->integral, provider->diff);
     return provider->param.P * new_err + provider->param.I * provider->integral + provider->param.D * provider->diff;
 }
 
@@ -43,4 +47,5 @@ void pid_reset_all(pPIDProvider provider)
     provider->integral = 0;
     provider->diff = 0;
     provider->err = 0;
+    log_d("pid reset all");
 }

@@ -2,6 +2,9 @@
 #include "Base.h"
 #include "Math.h"
 
+#define LOG_TAG "Keyboard"
+#include "elog.h"
+
 /**
  * @brief 按键状态
  */
@@ -17,6 +20,12 @@ typedef enum KeyState
  */
 typedef struct Key
 {
+    /**
+     * @brief 按键码
+     * 
+     * 应唯一, 用于识别按键
+     */
+    uint8_t code;
     KeyState_t state;
 
     /**
@@ -27,11 +36,14 @@ typedef struct Key
     /**
      * @brief 按键下一次产生 KeyRepeat 冷却时间
      */
-    uint8_t repeatCoolDown;
+    uint8_t repeatCooldown;
 } Key_t, *pKey;
 
 /**
  * @brief 行列键盘
+ * 
+ * 行线 需要为 GPIO_OUTPUT
+ * 列线 需要为 GPIO_INPUT
  */
 typedef struct Keyboard
 {
@@ -49,13 +61,13 @@ typedef struct Keyboard
      * 
      * 一维数组[row]
      */
-    Pin_t *rowPin;
+    Pin_t *rowPins;
     /**
      * @brief 键盘列 Pin
      * 
      * 一维数组[col]
      */
-    Pin_t *colPin;
+    Pin_t *colPins;
 
     /**
      * @brief 迟滞时间 - 毫秒ms
@@ -82,58 +94,117 @@ typedef struct Keyboard
      * @brief 上一次扫描的时间
      */
     uint32_t lastScanTick;
-} KeyBoard_t, pKeyBoard;
+} KeyBoard_t, *pKeyBoard;
 
-typedef void (*KeyboardCallback)(KeyBoard_t keyboard, Key_t key, KeyState_t state);
+/**
+ * @brief 键盘对象构造器
+ * 
+ * @param keyboard 要初始化的键盘对象
+ * @return 0 成功
+ */
+int keyboard_ctor(pKeyBoard keyboard)
+{
+    if ((keyboard->rowPins = calloc(keyboard->row, sizeof(Pin_t))) == NULL)
+        goto Fail;
+    if ((keyboard->colPins = calloc(keyboard->col, sizeof(Pin_t))) == NULL)
+        goto Fail;
+    if ((keyboard->scan_data = calloc(keyboard->row, sizeof(pKey))) == NULL)
+        goto Fail;
+    for (size_t row = 0; row < keyboard->row; row++)
+    {
+        if ((keyboard->scan_data[row] = calloc(keyboard->col, sizeof(Key_t))) == NULL)
+            goto Fail;
+    }
+
+    return 0;
+Fail:
+    keyboard_dtor(keyboard);
+    return 1;
+}
+
+/**
+ * @brief 键盘对象析构器
+ */
+void keyboard_dtor(pKeyBoard keyboard)
+{
+    free(keyboard->rowPins);
+    free(keyboard->colPins);
+    if (keyboard->scan_data != NULL)
+        for (size_t row = 0; row < keyboard->row; row++)
+        {
+            free(keyboard->scan_data[row]);
+        }
+
+    free(keyboard->scan_data);
+}
+
+/**
+ * @brief 按键处理回调
+ * 
+ * @param keyboard 键盘 
+ * @param key 按键
+ * @param state 按键状态
+ * @param code 按键码
+ */
+typedef void (*KeyboardCallback)(KeyBoard_t keyboard, Key_t key, KeyState_t state, uint8_t code);
 
 void scan_keyboard(pKeyBoard keyboard, KeyboardCallback handler)
 {
+    log_d("Keyboard scan start!");
     uint32_t curTick = HAL_GetTick();
-    uint8_t deltaT = curTick - keyboard.lastScanTick;
+    uint32_t deltaT = curTick - keyboard->lastScanTick;
+    log_d("Current Tick:%d, DeltaT:%d", curTick, deltaT);
 
     /**
      * @brief 依次给每行通上高电平, 并读取列线电平信息
      * 若列线是 高电平 则代表 对应行列 的按键被 按下
      */
-    for (size_t row = 0; row < keyboard.row; row++)
+    for (size_t row = 0; row < keyboard->row; row++)
     {
-        HAL_GPIO_WritePin(keyboard.rowPin->port, keyboard.rowPin->pin, GPIO_PIN_SET);
-        for (size_t col = 0; col < keyboard.col; col++)
+        HAL_GPIO_WritePin(keyboard->rowPins->port, keyboard->rowPins->pin, GPIO_PIN_SET);
+        for (size_t col = 0; col < keyboard->col; col++)
         {
-            _Bool isUp = HAL_GPIO_ReadPin(keyboard.colPin->port, keyboard.colPin->pin) == GPIO_PIN_RESET;
-            Key_t key = keyboard.scan_data[row][col];
+            log_d("Scanning Row:%d, Col%d", row, col);
+            _Bool isUp = !HAL_GPIO_ReadPin(keyboard->colPins->port, keyboard->colPins->pin);
+            pKey key = &keyboard->scan_data[row][col];
+            log_d("Key[%d]isUp:%d", isUp);
 
-            switch (key.state)
+            switch (key->state)
             {
             case KeyDown:
             case KeyRepeat:
-                key.repeatCoolDown -= min(key.repeatCoolDown, deltaT);
-                if (key.repeatCoolDown == 0)
+                key->repeatCooldown -= min(key->repeatCooldown, deltaT);
+                log_v("Key[%d]Repeat Cooldown:%d", key->code, key->repeatCooldown);
+                if (key->repeatCooldown == 0)
                 {
-                    key.state = KeyRepeat;
-                    handler(keyboard, key, key.state);
-                    key.repeatCoolDown = keyboard.repeatTime;
+                    key->state = KeyRepeat;
+                    log_d("Key[%d] Repeated!");
+                    handler(*keyboard, *key, key->state, key->code);
+                    key->repeatCooldown = keyboard->repeatTime;
                 }
             case KeyUp:
                 //异或, 按键状态相同为 0, 相异为 1
-                if (isUp ^ key.state == KeyUp)
+                if (isUp ^ (key->state == KeyUp))
                 {
-                    key.changeLastTime += deltaT;
-                    if (key.changeLastTime > keyboard.slugTime)
+                    key->changeLastTime += deltaT;
+                    log_d("Key[%d]Changing state, Old State:%d, Change last time:%d", key->code, key->state, key->changeLastTime);
+                    if (key->changeLastTime > keyboard->slugTime)
                     {
-                        key.changeLastTime = 0;
-                        key.repeatCoolDown = keyboard.repeatTime;
-                        key.state = key.state == KeyUp ? KeyDown : KeyUp;
-                        handler(keyboard, key, key.state);
+                        key->changeLastTime = 0;
+                        key->repeatCooldown = keyboard->repeatTime;
+                        key->state = key->state == KeyUp ? KeyDown : KeyUp;
+                        log_d("Key[%d]Changed state, New State:%d", key->code, key->state);
+                        handler(*keyboard, *key, key->state, key->code);
                     }
                 }
                 else
                 {
-                    key.changeLastTime -= min(key.changeLastTime, deltaT);
+                    key->changeLastTime -= min(key->changeLastTime, deltaT);
+                    log_v("Key[%d] Reducing Change last time:%d", key->code, key->changeLastTime);
                 }
             }
         }
-        HAL_GPIO_WritePin(keyboard.rowPin->port, keyboard.rowPin->pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(keyboard->rowPins->port, keyboard->rowPins->pin, GPIO_PIN_RESET);
     }
-    keyboard.lastScanTick = curTick;
+    keyboard->lastScanTick = curTick;
 }

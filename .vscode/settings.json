@@ -6,6 +6,7 @@
         "typeinfo": "cpp",
         "stdint.h": "c",
         "base.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "elog.h": "c"
     }
 }
