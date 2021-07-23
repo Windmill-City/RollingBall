@@ -15,7 +15,7 @@ typedef volatile uint32_t CCRx;
 /**
  * @brief 舵机
  */
-struct Servo
+typedef struct Servo
 {
     /**
      * @brief 定时器比较值
@@ -53,7 +53,7 @@ struct Servo
  * @param servo 舵机
  * @param newDeg 角度 - 角度制
  */
-void servo_set_degree(struct Servo *servo, Degree newDeg)
+void servo_set_degree(pServo servo, Degree newDeg)
 {
     newDeg = clamp(0, newDeg, servo->maxDeg);
     servo->curDeg = newDeg;
@@ -67,7 +67,7 @@ void servo_set_degree(struct Servo *servo, Degree newDeg)
  * @param servo 舵机
  * @param newDegOffset 角度 - 角度制
  */
-void servo_set_degree_offset(struct Servo *servo, Degree newDegOffset)
+void servo_set_degree_offset(pServo servo, Degree newDegOffset)
 {
     servo_set_degree(servo, servo->maxDeg / 2 + newDegOffset);
 }
@@ -78,7 +78,7 @@ void servo_set_degree_offset(struct Servo *servo, Degree newDegOffset)
  * @param servo 舵机
  * @param newPW 脉宽
  */
-void servo_set_pw(struct Servo *servo, PulseWidth newPW)
+void servo_set_pw(pServo servo, PulseWidth newPW)
 {
     newPW = clamp(servo->minPW, newPW, servo->maxPW);
     servo->curDeg = (float)(newPW - servo->minPW) / (servo->maxPW - servo->minPW) * servo->maxDeg;
@@ -91,7 +91,7 @@ void servo_set_pw(struct Servo *servo, PulseWidth newPW)
  * 
  * @param servo 舵机
  */
-void servo_set_middle(struct Servo *servo)
+void servo_set_middle(pServo servo)
 {
     //中立位置应为最大角度一半
     servo->curDeg = servo->maxDeg / 2;

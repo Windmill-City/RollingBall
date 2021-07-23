@@ -17,10 +17,10 @@
 /**
  * @brief 小球状态
  */
-struct Ball
+typedef struct Ball
 {
     float VelX, VelY, PosX, PosY;
-};
+}Ball_t, *pBall;
 
 /**
  * @brief X/Y方向舵机
@@ -81,6 +81,20 @@ void rolling_ball_init()
 
     //等待舵机复位
     HAL_Delay(2000);
+
+    //接收OpenMV关于小球位置的信息
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(struct Ball));
+}
+
+/**
+ * @brief 处理来自OpenMV信息
+ * 
+ * @param huart 
+ */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    //继续接收OpenMV关于小球位置的信息
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(struct Ball));
 }
 
 /**
