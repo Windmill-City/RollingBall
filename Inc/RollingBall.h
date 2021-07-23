@@ -127,6 +127,18 @@ void keyHandler(KeyBoard_t keyboard, Key_t key, KeyState_t state, uint8_t code)
  */
 void rolling_ball_init()
 {
+    /* initialize EasyLogger */
+    elog_init();
+    /* set EasyLogger log format */
+    elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
+    elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG);
+    elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG);
+    elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG);
+    elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_LVL | ELOG_FMT_TAG);
+    elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_LVL | ELOG_FMT_TAG);
+    /* start EasyLogger */
+    elog_start();
+    
     log_i("Initialing Keyboard!");
     keyboard_init();
 
@@ -153,7 +165,7 @@ void rolling_ball_init()
     log_i("Servo back to middle!");
 
     //接收OpenMV关于小球位置的信息
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(Ball_t));
+    HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, sizeof(Ball_t));
     log_i("Initialize completed!");
 }
 
@@ -166,7 +178,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     log_d("[OpenMV]VelX:%f, VelY:%f, PosX:%f, PosY:%f", ball_cur.VelX, ball_cur.VelY, ball_cur.PosX, ball_cur.PosY);
     //继续接收OpenMV关于小球位置的信息
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(Ball_t));
+    HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, sizeof(Ball_t));
 }
 
 /**

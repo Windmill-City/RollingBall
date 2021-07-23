@@ -103,7 +103,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
     update_servo();
     scan_keyboard(&keyboard, keyHandler);
-    HAL_Delay(5);
+    HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }

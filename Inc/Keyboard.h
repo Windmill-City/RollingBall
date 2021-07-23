@@ -150,10 +150,10 @@ typedef void (*KeyboardCallback)(KeyBoard_t keyboard, Key_t key, KeyState_t stat
 
 void scan_keyboard(pKeyBoard keyboard, KeyboardCallback handler)
 {
-    log_d("Keyboard scan start!");
+    log_v("Keyboard scan start!");
     uint32_t curTick = HAL_GetTick();
     uint32_t deltaT = curTick - keyboard->lastScanTick;
-    log_d("Current Tick:%d, DeltaT:%d", curTick, deltaT);
+    log_v("Current Tick:%d, DeltaT:%d", curTick, deltaT);
 
     /**
      * @brief 依次给每行通上高电平, 并读取列线电平信息
@@ -164,10 +164,10 @@ void scan_keyboard(pKeyBoard keyboard, KeyboardCallback handler)
         HAL_GPIO_WritePin(keyboard->rowPins->port, keyboard->rowPins->pin, GPIO_PIN_SET);
         for (size_t col = 0; col < keyboard->col; col++)
         {
-            log_d("Scanning Row:%d, Col%d", row, col);
+            log_v("Scanning Row:%d, Col%d", row, col);
             _Bool isUp = !HAL_GPIO_ReadPin(keyboard->colPins->port, keyboard->colPins->pin);
             pKey key = &keyboard->scan_data[row][col];
-            log_d("Key[%d]isUp:%d", isUp);
+            log_v("Key[%d]isUp:%d", isUp);
 
             switch (key->state)
             {

@@ -38,7 +38,7 @@ float pid_push_new_err(pPIDProvider provider, float new_err)
 
     provider->diff = new_err - provider->err;
     provider->err = new_err;
-    log_d("Err:%f, Integral:%f, Diff:%f", provider->err, provider->integral, provider->diff);
+    log_v("Err:%f, Integral:%f, Diff:%f", provider->err, provider->integral, provider->diff);
     return provider->param.P * new_err + provider->param.I * provider->integral + provider->param.D * provider->diff;
 }
 
