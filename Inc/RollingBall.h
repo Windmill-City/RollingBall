@@ -83,7 +83,7 @@ void rolling_ball_init()
     HAL_Delay(2000);
 
     //接收OpenMV关于小球位置的信息
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(struct Ball));
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(Ball_t));
 }
 
 /**
@@ -94,7 +94,7 @@ void rolling_ball_init()
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     //继续接收OpenMV关于小球位置的信息
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(struct Ball));
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&ball_cur, sizeof(Ball_t));
 }
 
 /**
