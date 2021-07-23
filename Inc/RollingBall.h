@@ -10,7 +10,17 @@
  */
 
 #include "tim.h"
+#include "usart.h"
 #include "Servo.h"
+#include "PIDProvider.h"
+
+/**
+ * @brief 小球状态
+ */
+struct Ball
+{
+    float VelX, VelY, PosX, PosY;
+};
 
 /**
  * @brief X/Y方向舵机
@@ -18,8 +28,34 @@
 struct Servo servoX;
 struct Servo servoY;
 
-float targetDegX;
-float targetDegY;
+/**
+ * @brief 位置环
+ * 位置环 -> 速度环 -> 舵机角度
+ */
+struct PIDProvider pidPosX;
+struct PIDProvider pidPosY;
+
+/**
+ * @brief 速度环
+ * 位置环 -> 速度环 -> 舵机角度
+ */
+struct PIDProvider pidVelX;
+struct PIDProvider pidVelY;
+
+/**
+ * @brief 小球目标位置/速度
+ * 
+ * 目标位置手动指定
+ * 目标速度由速度环更新
+ */
+struct Ball ball_target;
+
+/**
+ * @brief 小球当前位置/速度
+ * 
+ * 当前位置/速度在串口中断获取, 数据来自OpenMV
+ */
+struct Ball ball_cur;
 
 /**
  * @brief 初始化滚球控制系统
@@ -52,8 +88,15 @@ void rolling_ball_init()
  */
 void update_servo()
 {
-    servo_set_degree(&servoX, targetDegX++);
-    HAL_Delay(1000);
-    if (targetDegX > 180)
-        targetDegX = 0;
+    //X方向
+    float errPosX = ball_target.PosX - ball_cur.PosX;
+    ball_target.VelX = pid_push_new_err(&pidPosX, errPosX);
+    float errVelX = ball_target.VelX - ball_cur.VelX;
+    servo_set_degree_offset(&servoX, pid_push_new_err(&pidVelX, errVelX));
+
+    //Y方向
+    float errPosY = ball_target.PosY - ball_cur.PosY;
+    ball_target.VelY = pid_push_new_err(&pidPosY, errPosY);
+    float errVelY = ball_target.VelY - ball_cur.VelY;
+    servo_set_degree_offset(&servoY, pid_push_new_err(&pidVelY, errVelY));
 }

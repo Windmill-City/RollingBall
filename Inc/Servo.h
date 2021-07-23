@@ -62,12 +62,23 @@ void servo_set_degree(struct Servo *servo, Degree newDeg)
 }
 
 /**
+ * @brief 设置舵机相对中立位置角度偏移
+ * 
+ * @param servo 舵机
+ * @param newDegOffset 角度 - 角度制
+ */
+void servo_set_degree_offset(struct Servo *servo, Degree newDegOffset)
+{
+    servo_set_degree(servo, servo->maxDeg / 2 + newDegOffset);
+}
+
+/**
  * @brief 设置舵机脉宽
  * 
  * @param servo 舵机
  * @param newPW 脉宽
  */
-void servo_ser_pw(struct Servo *servo, PulseWidth newPW)
+void servo_set_pw(struct Servo *servo, PulseWidth newPW)
 {
     newPW = clamp(servo->minPW, newPW, servo->maxPW);
     servo->curDeg = (float)(newPW - servo->minPW) / (servo->maxPW - servo->minPW) * servo->maxDeg;
