@@ -13,6 +13,7 @@
 #include "usart.h"
 #include "Servo.h"
 #include "PIDProvider.h"
+#include "Keyboard.h"
 
 /**
  * @brief 小球状态

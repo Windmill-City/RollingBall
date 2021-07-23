@@ -3,6 +3,9 @@
         "limits": "cpp",
         "*.tcc": "cpp",
         "type_traits": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "stdint.h": "c",
+        "base.h": "c",
+        "stdlib.h": "c"
     }
 }

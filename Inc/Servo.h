@@ -1,8 +1,5 @@
-#include <stdio.h>
-
-#define min(a, b) ((a < b) ? a : b)
-#define max(a, b) ((a > b) ? a : b)
-#define clamp(vl, v, vh) max(vl, min(v, vh))
+#include <stdint.h>
+#include "Math.h"
 
 /**
  * @brief PWM 脉宽 - 单位 us
