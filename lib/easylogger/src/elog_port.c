@@ -59,7 +59,7 @@ void elog_port_deinit(void)
  */
 void elog_port_output(const char *log, size_t size)
 {
-    HAL_UART_Transmit(&huart1, log, size, 100);
+    HAL_UART_Transmit(&huart1, (uint8_t *)log, size, 200);
 }
 
 /**

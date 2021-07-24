@@ -148,14 +148,14 @@ void rolling_ball_init()
     servoX.middlePW = 1500;
     servoX.minPW = 500;
     servoX.maxPW = 2500;
-    servo_set_middle(&servoX);
+    servo_set_degree(&servoX, 90);
 
     servoY.ccr = &TIM1->CCR2;
     servoY.maxDeg = 180;
     servoY.middlePW = 1500;
     servoY.minPW = 500;
     servoY.maxPW = 2500;
-    servo_set_middle(&servoY);
+    servo_set_degree(&servoY, 90);
 
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);

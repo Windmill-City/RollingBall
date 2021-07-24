@@ -9,6 +9,10 @@
         "stdlib.h": "c",
         "elog.h": "c",
         "usart.h": "c",
-        "spi.h": "c"
+        "spi.h": "c",
+        "i2c.h": "c",
+        "main.h": "c",
+        "stm32f4xx_hal.h": "c",
+        "rollingball.h": "c"
     }
 }
