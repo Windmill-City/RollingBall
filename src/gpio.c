@@ -52,29 +52,19 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, KRow_3_Pin|KRow_2_Pin|KRow_4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, KRow_4_Pin|KRow_3_Pin|KRow_2_Pin|KRow_1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(KRow_1_GPIO_Port, KRow_1_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : PEPin PEPin PEPin */
-  GPIO_InitStruct.Pin = KRow_3_Pin|KRow_2_Pin|KRow_4_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = KRow_1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(KRow_1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PFPin PFPin PFPin PFPin */
-  GPIO_InitStruct.Pin = KCol_4_Pin|KCol_3_Pin|KCol_2_Pin|KCol_1_Pin;
+  /*Configure GPIO pins : PEPin PEPin PEPin PEPin */
+  GPIO_InitStruct.Pin = KCol_3_Pin|KCol_2_Pin|KCol_1_Pin|KCol_4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PFPin PFPin PFPin PFPin */
+  GPIO_InitStruct.Pin = KRow_4_Pin|KRow_3_Pin|KRow_2_Pin|KRow_1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
 }

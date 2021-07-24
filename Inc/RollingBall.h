@@ -98,14 +98,27 @@ void keyboard_init()
     colPins[3].port = KCol_4_GPIO_Port;
     colPins[3].pin = KCol_4_Pin;
 
-    uint8_t code = 0;
-    for (size_t row = 0; row < keyboard.row; row++)
+    //初始化数字区
+    uint8_t code = 1;
+    for (size_t row = 0; row < 3; row++)
     {
-        for (size_t col = 0; col < keyboard.col; col++)
+        for (size_t col = 0; col < 3; col++)
         {
-            keyboard.scan_data[row][col].code = ++code;
+            keyboard.scan_data[row][col].code = code++;
         }
     }
+    //0
+    keyboard.scan_data[3][1].code = 0;
+    //初始化字母区
+    code = 'a';
+    for (size_t row = 0; row < 4; row++)
+    {
+        keyboard.scan_data[row][3].code = code++;
+    }
+    //*号
+    keyboard.scan_data[3][0].code = '*';
+    //#号
+    keyboard.scan_data[3][2].code = '#';
 }
 
 /**
