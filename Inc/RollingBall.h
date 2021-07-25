@@ -177,8 +177,11 @@ void rolling_ball_init()
     HAL_Delay(2000);
     log_i("Servo back to middle!");
 
-    //接收OpenMV关于小球位置的信息
-    HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, 1);
+    log_i("UART[1]:%d", huart1.Instance);
+    log_i("UART[2]:%d", huart2.Instance);
+
+    //第一次接收需要为1字节
+    HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, sizeof(Ball_t));
     log_i("Initialize completed!");
 }
 
@@ -191,7 +194,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     log_d("[OpenMV]VelX:%f, VelY:%f, PosX:%f, PosY:%f", ball_cur.VelX, ball_cur.VelY, ball_cur.PosX, ball_cur.PosY);
     //继续接收OpenMV关于小球位置的信息
-    HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, 1);
+    HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, sizeof(Ball_t));
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    log_e("UART:%d Error:%d on transimition!", huart->Instance, huart->ErrorCode);
+    __HAL_UART_CLEAR_FLAG(huart, huart->ErrorCode);
+    if (huart->Instance == huart2.Instance)
+        HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, sizeof(Ball_t));
 }
 
 /**
