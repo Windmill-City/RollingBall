@@ -180,7 +180,7 @@ void rolling_ball_init()
     log_i("UART[1]:%d", huart1.Instance);
     log_i("UART[2]:%d", huart2.Instance);
 
-    //第一次接收需要为1字节
+    //接收OpenMV关于小球位置的信息
     HAL_UART_Receive_IT(&huart2, (uint8_t *)&ball_cur, sizeof(Ball_t));
     log_i("Initialize completed!");
 }
