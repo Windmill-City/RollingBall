@@ -312,6 +312,7 @@ void rolling_ball_init()
 
     log_i("Initialing Servo!");
     servoX.ccr = &TIM1->CCR1;
+    servoX.minDeg = 10;
     servoX.maxDeg = 180;
     servoX.zeroPW = 1833;
     servoX.zeroDeg = 120;
@@ -320,6 +321,7 @@ void rolling_ball_init()
     servo_set_zero(&servoX);
 
     servoY.ccr = &TIM1->CCR2;
+    servoX.minDeg = 10;
     servoY.maxDeg = 180;
     servoY.zeroPW = 1833;
     servoY.zeroDeg = 120;

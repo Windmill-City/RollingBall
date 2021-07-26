@@ -26,6 +26,10 @@ typedef struct Servo
      */
     Degree curDeg;
     /**
+     * @brief 最小角度
+     */
+    Degree minDeg;
+    /**
      * @brief 最大角度
      */
     Degree maxDeg;
@@ -60,7 +64,7 @@ typedef struct Servo
 void servo_set_degree(pServo servo, Degree newDeg)
 {
     log_v("[%d]Set degree:%f", servo, newDeg);
-    newDeg = clamp(0, newDeg, servo->maxDeg);
+    newDeg = clamp(servo->minDeg, newDeg, servo->maxDeg);
     servo->curDeg = newDeg;
     servo->curPW = newDeg / servo->maxDeg * (servo->maxPW - servo->minPW) + servo->minPW;
     *servo->ccr = servo->curPW;
