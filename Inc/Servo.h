@@ -1,6 +1,9 @@
 #include <stdint.h>
 #include "Math.h"
 
+#define LOG_TAG "Servo"
+#include "elog.h"
+
 /**
  * @brief PWM 脉宽 - 单位 us
  * 需要定时器时钟频率为 1MHz - 即 1us
@@ -27,13 +30,17 @@ typedef struct Servo
      */
     Degree maxDeg;
     /**
+     * @brief 中立位置角度
+     */
+    Degree zeroDeg;
+    /**
      * @brief 当前脉宽
      */
     PulseWidth curPW;
     /**
      * @brief 中立位置脉宽
      */
-    PulseWidth middlePW;
+    PulseWidth zeroPW;
     /**
      * @brief 最小角度脉宽
      */
@@ -52,6 +59,7 @@ typedef struct Servo
  */
 void servo_set_degree(pServo servo, Degree newDeg)
 {
+    log_v("[%d]Set degree:%f", servo, newDeg);
     newDeg = clamp(0, newDeg, servo->maxDeg);
     servo->curDeg = newDeg;
     servo->curPW = newDeg / servo->maxDeg * (servo->maxPW - servo->minPW) + servo->minPW;
@@ -66,7 +74,7 @@ void servo_set_degree(pServo servo, Degree newDeg)
  */
 void servo_set_degree_offset(pServo servo, Degree newDegOffset)
 {
-    servo_set_degree(servo, servo->maxDeg / 2 + newDegOffset);
+    servo_set_degree(servo, servo->zeroDeg + newDegOffset);
 }
 
 /**
@@ -77,6 +85,7 @@ void servo_set_degree_offset(pServo servo, Degree newDegOffset)
  */
 void servo_set_pw(pServo servo, PulseWidth newPW)
 {
+    log_v("[%d]Set Pulse Width:%f", servo, newPW);
     newPW = clamp(servo->minPW, newPW, servo->maxPW);
     servo->curDeg = (float)(newPW - servo->minPW) / (servo->maxPW - servo->minPW) * servo->maxDeg;
     servo->curPW = newPW;
@@ -88,10 +97,9 @@ void servo_set_pw(pServo servo, PulseWidth newPW)
  * 
  * @param servo 舵机
  */
-void servo_set_middle(pServo servo)
+void servo_set_zero(pServo servo)
 {
-    //中立位置应为最大角度一半
-    servo->curDeg = servo->maxDeg / 2;
-    servo->curPW = servo->middlePW;
+    servo->curDeg = servo->zeroDeg;
+    servo->curPW = servo->zeroPW;
     *servo->ccr = servo->curPW;
 }

@@ -105,8 +105,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    scan_keyboard(&keyboard, keyHandler);
-    HAL_Delay(20);
+    updateHandler();
   }
   /* USER CODE END 3 */
 }
