@@ -63,8 +63,8 @@ typedef struct Servo
  */
 void servo_set_degree(pServo servo, Degree newDeg)
 {
-    log_v("[%d]Set degree:%f", servo, newDeg);
     newDeg = clamp(servo->minDeg, newDeg, servo->maxDeg);
+    log_v("[%d]Set degree:%f", servo, newDeg);
     servo->curDeg = newDeg;
     servo->curPW = newDeg / servo->maxDeg * (servo->maxPW - servo->minPW) + servo->minPW;
     *servo->ccr = servo->curPW;
@@ -89,8 +89,8 @@ void servo_set_degree_offset(pServo servo, Degree newDegOffset)
  */
 void servo_set_pw(pServo servo, PulseWidth newPW)
 {
-    log_v("[%d]Set Pulse Width:%f", servo, newPW);
     newPW = clamp(servo->minPW, newPW, servo->maxPW);
+    log_v("[%d]Set Pulse Width:%f", servo, newPW);
     servo->curDeg = (float)(newPW - servo->minPW) / (servo->maxPW - servo->minPW) * servo->maxDeg;
     servo->curPW = newPW;
     *servo->ccr = servo->curPW;

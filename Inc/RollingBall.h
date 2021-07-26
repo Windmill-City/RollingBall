@@ -321,7 +321,7 @@ void rolling_ball_init()
     servo_set_zero(&servoX);
 
     servoY.ccr = &TIM1->CCR2;
-    servoX.minDeg = 10;
+    servoY.minDeg = 10;
     servoY.maxDeg = 180;
     servoY.zeroPW = 1833;
     servoY.zeroDeg = 120;
