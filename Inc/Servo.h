@@ -26,33 +26,33 @@ typedef struct Servo
      */
     Degree curDeg;
     /**
-     * @brief 最小角度
-     */
-    Degree minDeg;
-    /**
-     * @brief 最大角度
-     */
-    Degree maxDeg;
-    /**
-     * @brief 中立位置角度
-     */
-    Degree zeroDeg;
-    /**
      * @brief 当前脉宽
      */
     PulseWidth curPW;
     /**
-     * @brief 中立位置脉宽
+     * @brief 系统最小角度
      */
-    PulseWidth zeroPW;
+    Degree minDeg;
     /**
-     * @brief 最小角度脉宽
+     * @brief 系统最大角度
      */
-    PulseWidth minPW;
+    Degree maxDeg;
     /**
-     * @brief 最大角度脉宽
+     * @brief 系统零点角度
      */
-    PulseWidth maxPW;
+    Degree zeroDeg;
+    /**
+     * @brief 设计最小角度脉宽
+     */
+    PulseWidth designMinPW;
+    /**
+     * @brief 设计最大角度脉宽
+     */
+    PulseWidth designMaxPW;
+    /**
+     * @brief 设计最大角度
+     */
+    Degree designMaxDeg;
 } Servo_t, *pServo;
 
 /**
@@ -66,7 +66,7 @@ void servo_set_degree(pServo servo, Degree newDeg)
     newDeg = clamp(servo->minDeg, newDeg, servo->maxDeg);
     log_v("[%d]Set degree:%f", servo, newDeg);
     servo->curDeg = newDeg;
-    servo->curPW = newDeg / servo->maxDeg * (servo->maxPW - servo->minPW) + servo->minPW;
+    servo->curPW = newDeg / servo->designMaxDeg * (servo->designMaxPW - servo->designMinPW) + servo->designMinPW;
     *servo->ccr = servo->curPW;
 }
 
@@ -89,9 +89,9 @@ void servo_set_degree_offset(pServo servo, Degree newDegOffset)
  */
 void servo_set_pw(pServo servo, PulseWidth newPW)
 {
-    newPW = clamp(servo->minPW, newPW, servo->maxPW);
+    newPW = clamp(servo->designMinPW, newPW, servo->designMaxPW);
     log_v("[%d]Set Pulse Width:%f", servo, newPW);
-    servo->curDeg = (float)(newPW - servo->minPW) / (servo->maxPW - servo->minPW) * servo->maxDeg;
+    servo->curDeg = (float)(newPW - servo->designMinPW) / (servo->designMaxPW - servo->designMinPW) * servo->designMaxDeg;
     servo->curPW = newPW;
     *servo->ccr = servo->curPW;
 }
@@ -103,7 +103,5 @@ void servo_set_pw(pServo servo, PulseWidth newPW)
  */
 void servo_set_zero(pServo servo)
 {
-    servo->curDeg = servo->zeroDeg;
-    servo->curPW = servo->zeroPW;
-    *servo->ccr = servo->curPW;
+    servo_set_degree(servo, servo->zeroDeg);
 }

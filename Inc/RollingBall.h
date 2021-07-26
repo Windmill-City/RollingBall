@@ -274,7 +274,7 @@ void update_trace_point()
 {
     update_servo();
     scan_keyboard(&keyboard, keyHandler);
-    HAL_Delay(20);
+    HAL_Delay(5);
 }
 
 float degX = 0;
@@ -313,20 +313,20 @@ void rolling_ball_init()
     log_i("Initialing Servo!");
     servoX.ccr = &TIM1->CCR1;
     servoX.minDeg = 10;
-    servoX.maxDeg = 180;
-    servoX.zeroPW = 1833;
+    servoX.maxDeg = 170;
     servoX.zeroDeg = 120;
-    servoX.minPW = 500;
-    servoX.maxPW = 2500;
+    servoX.designMinPW = 500;
+    servoX.designMaxPW = 2500;
+    servoX.designMaxDeg = 180;
     servo_set_zero(&servoX);
 
     servoY.ccr = &TIM1->CCR2;
     servoY.minDeg = 10;
-    servoY.maxDeg = 180;
-    servoY.zeroPW = 1833;
+    servoY.maxDeg = 170;
     servoY.zeroDeg = 120;
-    servoY.minPW = 500;
-    servoY.maxPW = 2500;
+    servoY.designMinPW = 500;
+    servoY.designMaxPW = 2500;
+    servoY.designMaxDeg = 180;
     servo_set_zero(&servoY);
 
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
