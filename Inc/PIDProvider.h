@@ -11,8 +11,16 @@ typedef struct PIDParam
     float P;
     float I;
     float D;
+    /**
+     * @brief 积分项上下限
+     */
     float maxIntegral;
-}PIDParam_t, *pPIDParam;
+    /**
+     * @brief 最大积分误差
+     * 用于积分分离
+     */
+    float maxIntegralErr;
+} PIDParam_t, *pPIDParam;
 typedef struct PIDProvider
 {
     struct PIDParam param;
@@ -28,13 +36,19 @@ typedef struct PIDProvider
      * @brief 误差微分值
      */
     float diff;
-}PIDProvider_t, *pPIDProvider;
+} PIDProvider_t, *pPIDProvider;
 
 float pid_push_new_err(pPIDProvider provider, float new_err)
 {
-    provider->integral += new_err;
-    
-    provider->integral = clamp(-provider->param.maxIntegral, provider->integral, provider->param.maxIntegral);
+    //积分分离, 大于最大积分误差则清零积分
+    if (abs(new_err) <= provider->param.maxIntegralErr)
+    {
+        provider->integral += new_err;
+        //积分限幅
+        provider->integral = clamp(-provider->param.maxIntegral, provider->integral, provider->param.maxIntegral);
+    }
+    else
+        provider->integral = 0;
 
     provider->diff = new_err - provider->err;
     provider->err = new_err;
