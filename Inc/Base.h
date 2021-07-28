@@ -1,3 +1,4 @@
+#pragma once
 #include "gpio.h"
 
 typedef struct Pin

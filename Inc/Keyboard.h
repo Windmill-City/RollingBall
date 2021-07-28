@@ -1,3 +1,4 @@
+#pragma once
 #include <stdlib.h>
 #include "Base.h"
 #include "Math.h"

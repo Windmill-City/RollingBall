@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file RollingBall.h
  * @author Windmill_City
