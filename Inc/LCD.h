@@ -483,7 +483,7 @@ uint8_t lcd_draw_char(pLCD lcd, uint16_t sx, uint16_t sy, char ch, uint8_t ch_si
              * [1       1   ]       [    1  1 1           1  1   1  1    ]
              * [1       1   ]       [    1 11                1  11  1    ]
              */
-            //位于连续存储数据的第几个像素
+            //位于连续存储数据的第几个像素, IntegerCeilingDivision(ch_height, 8) -> 求每列需要的字节数
             uint16_t pixel_index = col * IntegerCeilingDivision(ch_height, 8) * 8 + row;
             uint8_t data_col = ch_data[pixel_index / 8];
             *toFill = (data_col << (pixel_index % 8)) & 0x80 ? forgrand : background;
