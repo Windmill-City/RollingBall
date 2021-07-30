@@ -90,12 +90,12 @@ typedef struct Keyboard
      * 二维数组[row][col]
      */
     Key_t **scan_data;
-} KeyBoard_t, *pKeyBoard;
+} Keyboard_t, *pKeyboard;
 
 /**
  * @brief 键盘对象析构器
  */
-void keyboard_dtor(pKeyBoard keyboard)
+void keyboard_dtor(pKeyboard keyboard)
 {
     free(keyboard->rowPins);
     free(keyboard->colPins);
@@ -114,7 +114,7 @@ void keyboard_dtor(pKeyBoard keyboard)
  * @param keyboard 要初始化的键盘对象
  * @return 0 成功
  */
-int keyboard_ctor(pKeyBoard keyboard)
+int keyboard_ctor(pKeyboard keyboard)
 {
     if ((keyboard->rowPins = calloc(keyboard->row, sizeof(Pin_t))) == NULL)
         goto Fail;
@@ -142,9 +142,9 @@ Fail:
  * @param state 按键状态
  * @param code 按键码
  */
-typedef void (*KeyboardCallback)(KeyBoard_t keyboard, Key_t key, KeyState_t state, uint8_t code);
+typedef void (*KeyboardCallback)(Keyboard_t keyboard, Key_t key, KeyState_t state, uint8_t code);
 
-void scan_keyboard(pKeyBoard keyboard, KeyboardCallback handler)
+void scan_keyboard(pKeyboard keyboard, KeyboardCallback handler)
 {
     log_v("Keyboard scan start!");
 

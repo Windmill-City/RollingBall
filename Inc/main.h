@@ -58,22 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define KCol_3_Pin GPIO_PIN_2
-#define KCol_3_GPIO_Port GPIOE
-#define KCol_2_Pin GPIO_PIN_4
-#define KCol_2_GPIO_Port GPIOE
-#define KCol_1_Pin GPIO_PIN_6
-#define KCol_1_GPIO_Port GPIOE
-#define KRow_4_Pin GPIO_PIN_0
-#define KRow_4_GPIO_Port GPIOF
-#define KRow_3_Pin GPIO_PIN_2
-#define KRow_3_GPIO_Port GPIOF
-#define KRow_2_Pin GPIO_PIN_4
-#define KRow_2_GPIO_Port GPIOF
-#define KRow_1_Pin GPIO_PIN_6
-#define KRow_1_GPIO_Port GPIOF
-#define KCol_4_Pin GPIO_PIN_0
-#define KCol_4_GPIO_Port GPIOE
+#define LCD_BL_Pin GPIO_PIN_15
+#define LCD_BL_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

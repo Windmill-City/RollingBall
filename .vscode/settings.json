@@ -14,6 +14,12 @@
         "main.h": "c",
         "stm32f4xx_hal.h": "c",
         "rollingball.h": "c",
-        "stepper.h": "c"
-    }
+        "stepper.h": "c",
+        "array": "c",
+        "istream": "c",
+        "streambuf": "c"
+    },
+    "cSpell.words": [
+        "fsmc"
+    ]
 }
