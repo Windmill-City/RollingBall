@@ -206,6 +206,7 @@ void OLED_ShowString(uint8_t x, uint8_t y, const uint8_t *p, uint8_t size)
 		x += size / 2;
 		p++;
 	}
+	OLED_Refresh_Gram();
 }
 
 //ÏÔÊ¾2¸öÊı×Ö
