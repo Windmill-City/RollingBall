@@ -348,6 +348,7 @@ void rolling_ball_init()
 
     log_i("Initialing OLED");
     OLED_Init();
+    OLED_Test();
     OLED_ShowString(20, 20, "Help", 12);
 
     log_i("Initialing Pos");
