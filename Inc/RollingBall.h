@@ -18,6 +18,7 @@
 #include "LCD.h"
 #include "OLED.h"
 #include "LightSensor.h"
+#include "MPU6050.h"
 
 #define LOG_TAG "RollingBall"
 #include "elog.h"
@@ -276,6 +277,62 @@ LCD_t lcd = {
 
 #pragma endregion
 
+#pragma region MPU
+typedef struct Attribute
+{
+    /**
+     * @brief 欧拉角
+     */
+    struct Euler euler;
+    /**
+     * @brief 角速度
+     */
+    float omegaTheta;
+    float omegaPhi;
+    /**
+     * @brief 角加速度
+     */
+    float accOmegaTheta;
+    float accOmegaPhi;
+} Attribute_t, *pAttribute;
+
+Attribute_t fetchAttr()
+{
+    long data[9];
+    int8_t accuracy;
+    unsigned long timestamp;
+
+    struct Attribute attr;
+
+    //欧拉角
+    inv_get_sensor_type_euler(data, &accuracy, (inv_time_t *)&timestamp);
+
+    attr.euler.Pitch = ToFloat(data[0], 16);
+    attr.euler.Roll = ToFloat(data[1], 16);
+    attr.euler.Yaw = ToFloat(data[2], 16);
+
+    log_i("Euler: Pitch:%f Roll:%f Yaw:%f", attr.euler.Pitch, attr.euler.Roll, attr.euler.Yaw);
+
+    //角速度
+    inv_get_sensor_type_gyro(data, &accuracy, (inv_time_t *)&timestamp);
+
+    attr.omegaTheta = ToFloat(data[0], 16);
+    attr.omegaPhi = ToFloat(data[1], 16);
+
+    log_i("Omega: %f %f %f", attr.omegaTheta, attr.omegaPhi, ToFloat(data[2], 16));
+    //角加速度
+    inv_get_sensor_type_accel(data, &accuracy, (inv_time_t *)&timestamp);
+
+    attr.accOmegaTheta = ToFloat(data[0], 16);
+    attr.accOmegaPhi = ToFloat(data[1], 16);
+
+    log_i("Acc: %f %f %f", attr.accOmegaTheta, attr.accOmegaPhi, ToFloat(data[2], 16));
+
+    return attr;
+}
+
+#pragma endregion
+
 #pragma region Update Handler
 
 typedef void (*UpdateHandler)();
@@ -320,6 +377,18 @@ void update_debug_degree()
     HAL_Delay(20);
 }
 
+void update_mpu()
+{
+    bool newData = false;
+    while (read_fifo(&newData))
+    {
+    }
+    if (newData)
+    {
+        fetchAttr();
+    }
+}
+
 #pragma endregion
 
 /**
@@ -357,6 +426,7 @@ void rolling_ball_init()
     OLED_ShowString(0, 40, "ATOM 2019/9/17", 12);
     OLED_ShowString(0, 52, "ASCII:", 12);
     OLED_ShowString(64, 52, "CODE:", 12);
+
     log_i("Initialing Pos");
     pos_init();
 
@@ -390,12 +460,17 @@ void rolling_ball_init()
     log_i("UART[2]:%d", huart2.Instance);
 
     //注册更新循环
-    updateHandler = update_servo;
+    updateHandler = update_mpu;
 
     log_i("Start OpemMV Recv");
     //接收OpenMV关于小球位置的信息
     HAL_UART_Receive_IT(&huart2, (uint8_t *)&openMV_buf, sizeof(OpenMV_t));
+
     log_i("Start ADC Recv");
     HAL_ADC_Start_IT(&hadc1);
+
+    log_i("Initializing MPU6050");
+    mpu6050_init(20, true);
+
     log_i("Initialize completed!");
 }

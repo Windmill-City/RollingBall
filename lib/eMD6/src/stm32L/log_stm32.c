@@ -26,7 +26,6 @@
 
 #include "packet.h"
 #include "log.h"
-#include "stm32f1xx.h"
 #include "usart.h"
 
 #if !defined(LOG_TAG)

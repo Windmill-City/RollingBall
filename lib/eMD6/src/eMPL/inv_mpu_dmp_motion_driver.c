@@ -35,7 +35,7 @@
 #define TARGET_STM32F1XX_HAL
 #define MPU6050
 #if defined TARGET_STM32F1XX_HAL
-#include "stm32f1xx_hal.h"
+#include "stm32f4xx_hal.h"
 #define delay_ms    HAL_Delay
 #define get_ms      HAL_GetMs
 static inline void HAL_GetMs(unsigned long *timeStamp) {

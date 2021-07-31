@@ -15,6 +15,15 @@
 #define clamp(vl, v, vh) max(vl, min(v, vh))
 
 /**
+ * @brief 定点数转浮点数
+ * 
+ * @param fixed 定点数
+ * @param count Q 16/32
+ * @return 浮点数 float
+ */
+#define ToFloat(fixed, count) (((float)fixed) / pow(2, count))
+
+/**
  * @brief 整数除法, 向上取整
  * 
  * @param divided 被除数
