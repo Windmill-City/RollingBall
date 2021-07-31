@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "i2c.h"
 #include "tim.h"
 #include "usart.h"
@@ -95,6 +96,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_FSMC_Init();
   MX_I2C1_Init();
+  MX_ADC1_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -164,9 +166,6 @@ void SystemClock_Config(void)
   */
 static void MX_NVIC_Init(void)
 {
-  /* USART1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USART2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
