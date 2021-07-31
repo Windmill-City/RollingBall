@@ -16,6 +16,7 @@
 #include "PIDProvider.h"
 #include "Keyboard.h"
 #include "LCD.h"
+#include "OLED.h"
 
 #define LOG_TAG "RollingBall"
 #include "elog.h"
@@ -343,7 +344,11 @@ void rolling_ball_init()
     log_i("Initialing LCD");
     lcd_init(&lcd, LCD_BL_GPIO_Port, LCD_BL_Pin);
     lcd_clear(&lcd, LIGHTBLUE);
-    lcd_draw_str(&lcd, 0, 0, "test", 24, BLACK, WHITE);
+    lcd_draw_str(&lcd, 0, 0, "test", 12, BLACK, WHITE);
+
+    log_i("Initialing OLED");
+    OLED_Init();
+    OLED_ShowString(20, 20, "Help", 12);
 
     log_i("Initialing Pos");
     pos_init();

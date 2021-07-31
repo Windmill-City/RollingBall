@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "Math.h"
+#include "MathUtil.h"
 
 #define LOG_TAG "Servo"
 #include "elog.h"
