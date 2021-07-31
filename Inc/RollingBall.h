@@ -348,9 +348,14 @@ void rolling_ball_init()
 
     log_i("Initialing OLED");
     OLED_Init();
-    OLED_Test();
-    OLED_ShowString(20, 20, "Help", 12);
-
+    //OLED_Test();
+    OLED_Clear();
+    // OLED_ShowString(20, 20, "Help", 12);
+	OLED_ShowString(0,0,"ALIENTEK",24);  
+	OLED_ShowString(0,24, "0.96' OLED TEST",16);  
+ 	OLED_ShowString(0,40,"ATOM 2019/9/17",12);  
+ 	OLED_ShowString(0,52,"ASCII:",12);  
+ 	OLED_ShowString(64,52,"CODE:",12);  
     log_i("Initialing Pos");
     pos_init();
 

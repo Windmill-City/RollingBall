@@ -17,7 +17,8 @@
         "stepper.h": "c",
         "array": "c",
         "istream": "c",
-        "streambuf": "c"
+        "streambuf": "c",
+        "gpio.h": "c"
     },
     "cSpell.words": [
         "fsmc"
