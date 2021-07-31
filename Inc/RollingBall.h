@@ -17,6 +17,7 @@
 #include "Keyboard.h"
 #include "LCD.h"
 #include "OLED.h"
+#include "LightSensor.h"
 
 #define LOG_TAG "RollingBall"
 #include "elog.h"
@@ -351,11 +352,11 @@ void rolling_ball_init()
     //OLED_Test();
     OLED_Clear();
     // OLED_ShowString(20, 20, "Help", 12);
-	OLED_ShowString(0,0,"ALIENTEK",24);  
-	OLED_ShowString(0,24, "0.96' OLED TEST",16);  
- 	OLED_ShowString(0,40,"ATOM 2019/9/17",12);  
- 	OLED_ShowString(0,52,"ASCII:",12);  
- 	OLED_ShowString(64,52,"CODE:",12);  
+    OLED_ShowString(0, 0, "ALIENTEK", 24);
+    OLED_ShowString(0, 24, "0.96' OLED TEST", 16);
+    OLED_ShowString(0, 40, "ATOM 2019/9/17", 12);
+    OLED_ShowString(0, 52, "ASCII:", 12);
+    OLED_ShowString(64, 52, "CODE:", 12);
     log_i("Initialing Pos");
     pos_init();
 
@@ -391,7 +392,10 @@ void rolling_ball_init()
     //注册更新循环
     updateHandler = update_servo;
 
+    log_i("Start OpemMV Recv");
     //接收OpenMV关于小球位置的信息
     HAL_UART_Receive_IT(&huart2, (uint8_t *)&openMV_buf, sizeof(OpenMV_t));
+    log_i("Start ADC Recv");
+    HAL_ADC_Start_IT(&hadc1);
     log_i("Initialize completed!");
 }

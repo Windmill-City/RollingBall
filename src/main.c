@@ -166,6 +166,12 @@ void SystemClock_Config(void)
   */
 static void MX_NVIC_Init(void)
 {
+  /* ADC_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(ADC_IRQn);
+  /* USART1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USART2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
