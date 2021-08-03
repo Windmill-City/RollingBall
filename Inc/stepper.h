@@ -1,5 +1,5 @@
 #pragma once
-#include "Base.h"
+#include "BoardBase.h"
 
 enum Degree
 {
@@ -21,7 +21,7 @@ typedef struct Stepper
     /**
      * @brief 控制脚位
      */
-    pPin pins;
+    Pin_t pins[4];
 } Stepper_t, *pStepper;
 
 /**
