@@ -311,7 +311,7 @@ Attribute_t fetchAttr()
     attr.euler.Roll = ToFloat(data[1], 16);
     attr.euler.Yaw = ToFloat(data[2], 16);
 
-    log_i("Euler: Pitch:%f Roll:%f Yaw:%f", attr.euler.Pitch, attr.euler.Roll, attr.euler.Yaw);
+    log_v("Euler: Pitch:%f Roll:%f Yaw:%f", attr.euler.Pitch, attr.euler.Roll, attr.euler.Yaw);
 
     //角速度
     inv_get_sensor_type_gyro(data, &accuracy, (inv_time_t *)&timestamp);
@@ -319,14 +319,14 @@ Attribute_t fetchAttr()
     attr.omegaTheta = ToFloat(data[0], 16);
     attr.omegaPhi = ToFloat(data[1], 16);
 
-    log_i("Omega: %f %f %f", attr.omegaTheta, attr.omegaPhi, ToFloat(data[2], 16));
+    log_v("Omega: %f %f %f", attr.omegaTheta, attr.omegaPhi, ToFloat(data[2], 16));
     //角加速度
     inv_get_sensor_type_accel(data, &accuracy, (inv_time_t *)&timestamp);
 
     attr.accOmegaTheta = ToFloat(data[0], 16);
     attr.accOmegaPhi = ToFloat(data[1], 16);
 
-    log_i("Acc: %f %f %f", attr.accOmegaTheta, attr.accOmegaPhi, ToFloat(data[2], 16));
+    log_v("Acc: %f %f %f", attr.accOmegaTheta, attr.accOmegaPhi, ToFloat(data[2], 16));
 
     return attr;
 }
@@ -377,6 +377,9 @@ void update_debug_degree()
     HAL_Delay(20);
 }
 
+#include <stdio.h>
+#include <string.h>
+char str_buf[512];
 void update_mpu()
 {
     bool newData = false;
@@ -385,9 +388,12 @@ void update_mpu()
     }
     if (newData)
     {
-        fetchAttr();
+        Attribute_t attr = fetchAttr();
+        HAL_Delay(20);
     }
 }
+
+void update_empty() {}
 
 #pragma endregion
 
@@ -414,60 +420,53 @@ void rolling_ball_init()
     log_i("Initialing LCD");
     lcd_init(&lcd, LCD_BL_GPIO_Port, LCD_BL_Pin);
     lcd_clear(&lcd, LIGHTBLUE);
-    lcd_draw_str(&lcd, 0, 0, "test", 12, BLACK, WHITE);
 
     log_i("Initialing OLED");
     OLED_Init();
     //OLED_Test();
     OLED_Clear();
-    // OLED_ShowString(20, 20, "Help", 12);
-    OLED_ShowString(0, 0, "ALIENTEK", 24);
-    OLED_ShowString(0, 24, "0.96' OLED TEST", 16);
-    OLED_ShowString(0, 40, "ATOM 2019/9/17", 12);
-    OLED_ShowString(0, 52, "ASCII:", 12);
-    OLED_ShowString(64, 52, "CODE:", 12);
 
-    log_i("Initialing Pos");
-    pos_init();
+    // log_i("Initialing Pos");
+    // pos_init();
 
-    log_i("Initialing Servo!");
-    servoX.ccr = &TIM1->CCR1;
-    servoX.minDeg = 10;
-    servoX.maxDeg = 170;
-    servoX.zeroDeg = 120;
-    servoX.designMinPW = 500;
-    servoX.designMaxPW = 2500;
-    servoX.designMaxDeg = 180;
-    servo_set_zero(&servoX);
+    // log_i("Initialing Servo!");
+    // servoX.ccr = &TIM1->CCR1;
+    // servoX.minDeg = 10;
+    // servoX.maxDeg = 170;
+    // servoX.zeroDeg = 120;
+    // servoX.designMinPW = 500;
+    // servoX.designMaxPW = 2500;
+    // servoX.designMaxDeg = 180;
+    // servo_set_zero(&servoX);
 
-    servoY.ccr = &TIM1->CCR2;
-    servoY.minDeg = 10;
-    servoY.maxDeg = 170;
-    servoY.zeroDeg = 120;
-    servoY.designMinPW = 500;
-    servoY.designMaxPW = 2500;
-    servoY.designMaxDeg = 180;
-    servo_set_zero(&servoY);
+    // servoY.ccr = &TIM1->CCR2;
+    // servoY.minDeg = 10;
+    // servoY.maxDeg = 170;
+    // servoY.zeroDeg = 120;
+    // servoY.designMinPW = 500;
+    // servoY.designMaxPW = 2500;
+    // servoY.designMaxDeg = 180;
+    // servo_set_zero(&servoY);
 
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+    // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
-    //等待舵机复位
-    HAL_Delay(2000);
-    log_i("Servo back to zero!");
+    // //等待舵机复位
+    // HAL_Delay(2000);
+    // log_i("Servo back to zero!");
 
-    log_i("UART[1]:%d", huart1.Instance);
-    log_i("UART[2]:%d", huart2.Instance);
+    // log_i("UART[1]:%d", huart1.Instance);
+    // log_i("UART[2]:%d", huart2.Instance);
 
     //注册更新循环
     updateHandler = update_mpu;
 
-    log_i("Start OpemMV Recv");
-    //接收OpenMV关于小球位置的信息
-    HAL_UART_Receive_IT(&huart2, (uint8_t *)&openMV_buf, sizeof(OpenMV_t));
+    // log_i("Start OpemMV Recv");
+    // //接收OpenMV关于小球位置的信息
+    // HAL_UART_Receive_IT(&huart2, (uint8_t *)&openMV_buf, sizeof(OpenMV_t));
 
-    log_i("Start ADC Recv");
-    HAL_ADC_Start_IT(&hadc1);
+    // log_i("Start ADC Recv");
+    // HAL_ADC_Start_IT(&hadc1);
 
     log_i("Initializing MPU6050");
     mpu6050_init(20, true);

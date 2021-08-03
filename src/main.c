@@ -97,6 +97,7 @@ int main(void)
   MX_FSMC_Init();
   MX_I2C1_Init();
   MX_ADC1_Init();
+  MX_I2C2_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();

@@ -68,7 +68,7 @@ void OLED_WR_Byte(uint8_t dat, OLED_WR_MODE cmd)
 		write[0] = 0x40;
 		break;
 	}
-	HAL_I2C_Master_Transmit(&hi2c1, 0x78, write, 2, HAL_MAX_DELAY);
+	HAL_I2C_Master_Transmit(&hi2c2, 0x78, write, 2, 10);
 }
 
 //开启OLED显示
